@@ -2,7 +2,6 @@ package dapi
 
 import (
 	"context"
-	"fmt"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"sync"
@@ -31,7 +30,21 @@ type ContainerNetwork struct {
 func (d *DockerAPI) Init() error {
 	var err error
 
+	d.Containers = make(map[string]*Container)
 	d.Client, err = client.NewEnvClient()
+	if err != nil {
+		return err
+	}
+
+	containers, err := d.GetContainers()
+	if err != nil {
+		return err
+	}
+	for _, c := range containers {
+		d.Containers[c.ID] = c
+	}
+
+	err = d.StartMonitoringRunningContainers()
 	if err != nil {
 		return err
 	}
@@ -49,7 +62,7 @@ func (d *DockerAPI) GetContainer(id string) (*Container, error) {
 
 		stats := &ContainerStats{
 			doneChan:         make(chan bool),
-			previousCPUStats: CPUStats{},
+			previousCPUStats: &CPUStats{},
 			StatsEntry: StatsEntry{
 				CPUPercentage:    0,
 				Memory:           0,
@@ -73,8 +86,6 @@ func (d *DockerAPI) GetContainer(id string) (*Container, error) {
 			container.Networks[i].Address = setting.IPAddress
 			i++
 		}
-
-		fmt.Println(tc)
 	}
 
 	return container, nil
