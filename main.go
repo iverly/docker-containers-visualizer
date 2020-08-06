@@ -9,4 +9,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	forever := make(chan bool)
+	<-forever
 }

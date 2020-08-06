@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"fmt"
+	"docker-containers-visualizer/services/dapi"
 	"github.com/spf13/cobra"
 )
 
@@ -19,5 +19,9 @@ func ExecuteRoot() error {
 }
 
 func runRoot(cmd *cobra.Command, args []string) {
-	fmt.Println("Hello World")
+	docker := dapi.DockerAPI{}
+	err := docker.Init()
+	if err != nil {
+		panic(err)
+	}
 }
