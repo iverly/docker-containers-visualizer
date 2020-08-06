@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -37,17 +38,27 @@ func runRoot(cmd *cobra.Command, args []string) {
 		tm.MoveCursor(0, 0)
 
 		table := tm.NewTable(0, 10, 5, ' ', 0)
-		fmt.Fprintf(table, "ID\tName\tNetwork\tAddress\tCPU\tRAM\n")
+		fmt.Fprintf(table, "Network\tID\tName\tAddress\tCPU %%\tRAM %%\n")
 
-		keys := make([]string, 0, len(docker.Containers))
-		for k := range docker.Containers {
-			keys = append(keys, docker.Containers[k].Name + ";;" + k)
-		}
-		sort.Strings(keys)
+		// tm.Println(table)
+		for _, network := range docker.Networks {
+			onNetwork := docker.GetContainersOnNetwork(network)
+			if len(onNetwork) == 0 {
+				continue
+			}
 
-		for _, k := range keys {
-			c := docker.Containers[strings.Split(k, ";;")[1]]
-			fmt.Fprintf(table, "%s\t%s\t%s\t%s\t%.2f%%\t%.2f%%\n", c.ID, c.Name, c.Networks[0].Name, c.Networks[0].Address, c.Stats.CPUPercentage, c.Stats.MemoryPercentage)
+			fmt.Fprintf(table, "%s\t-\t-\t-\t-\t-\t\n", network)
+			keys := make([]string, 0, len(onNetwork))
+			for k := range onNetwork {
+				keys = append(keys, onNetwork[k].Name + ";;" + strconv.Itoa(k))
+			}
+			sort.Strings(keys)
+
+			for _, k := range keys {
+				parseInt, _ := strconv.ParseInt(strings.Split(k, ";;")[1], 10, 32)
+				c := onNetwork[parseInt]
+				fmt.Fprintf(table, "-\t%s\t%s\t%s\t%.2f%%\t%.2f%%\n", c.ID, c.Name, c.Networks[0].Address, c.Stats.CPUPercentage, c.Stats.MemoryPercentage)
+			}
 		}
 
 		tm.Println(table)

@@ -4,12 +4,14 @@ import (
 	"context"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
+	"sort"
 	"sync"
 )
 
 type DockerAPI struct {
 	Client     *client.Client
 	Containers map[string]*Container
+	Networks   []string
 	sync.Mutex
 }
 
@@ -25,6 +27,10 @@ type Container struct {
 type ContainerNetwork struct {
 	Name    string
 	Address string
+}
+
+type Network struct {
+	Name string
 }
 
 func (d *DockerAPI) Init() error {
@@ -43,6 +49,12 @@ func (d *DockerAPI) Init() error {
 	for _, c := range containers {
 		d.Containers[c.ID] = c
 	}
+
+	networks, err := d.GetNetworks()
+	if err != nil {
+		return err
+	}
+	d.Networks = networks
 
 	err = d.StartMonitoringRunningContainers()
 	if err != nil {
@@ -91,6 +103,23 @@ func (d *DockerAPI) GetContainer(id string) (*Container, error) {
 	return container, nil
 }
 
+func (d *DockerAPI) GetNetworks() ([]string, error) {
+	networks, err := d.Client.NetworkList(context.Background(), types.NetworkListOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	ns := make([]string, len(networks))
+	i := 0
+	for _, network := range networks {
+		ns[i] = network.Name
+		i++
+	}
+
+	sort.Strings(ns)
+	return ns, nil
+}
+
 func (d *DockerAPI) GetContainers() ([]*Container, error) {
 	containers, err := d.Client.ContainerList(context.Background(), types.ContainerListOptions{})
 	if err != nil {
@@ -109,4 +138,16 @@ func (d *DockerAPI) GetContainers() ([]*Container, error) {
 	}
 
 	return cs, nil
+}
+
+func (d *DockerAPI) GetContainersOnNetwork(network string) []*Container  {
+	var cs []*Container
+	for _, c := range d.Containers {
+		for _, nn := range c.Networks {
+			if nn.Name == network {
+				cs = append(cs, c)
+			}
+		}
+	}
+	return cs
 }
