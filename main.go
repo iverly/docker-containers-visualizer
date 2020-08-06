@@ -2,14 +2,14 @@ package main
 
 import (
 	"docker-containers-visualizer/services/cmd"
+	"fmt"
+	"os"
 )
 
 func main() {
 	err := cmd.ExecuteRoot()
 	if err != nil {
-		panic(err)
+		fmt.Println(err.Error())
+		os.Exit(2)
 	}
-
-	forever := make(chan bool)
-	<-forever
 }

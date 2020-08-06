@@ -3,7 +3,6 @@ package dapi
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/docker/docker/api/types"
 	"io"
 	"sync"
@@ -82,7 +81,6 @@ func (d *DockerAPI) statsCallback(container *Container, stats *types.StatsJSON) 
 			container.Stats.Memory = float64(stats.MemoryStats.Usage)
 			container.Stats.MemoryLimit = float64(stats.MemoryStats.Limit)
 			container.Stats.MemoryPercentage = container.Stats.Memory / container.Stats.MemoryLimit * 100.0
-			fmt.Printf("%s: %.2f%% cpu, %.2f%% ram\n", container.Name, container.Stats.CPUPercentage, container.Stats.MemoryPercentage)
 		}
 
 		container.Stats.previousCPUStats = &CPUStats{TotalUsage: stats.CPUStats.CPUUsage.TotalUsage, SystemUsage: stats.CPUStats.SystemUsage}

@@ -73,7 +73,7 @@ func (d *DockerAPI) GetContainer(id string) (*Container, error) {
 
 		container = &Container{
 			ID:       tc.ID[:12],
-			Name:     removeSlashForName(tc.Name),
+			Name:     tc.Name[1:],
 			Image:    tc.Image,
 			Running:  tc.State.Running,
 			Stats:    stats,
