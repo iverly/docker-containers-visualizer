@@ -1,10 +1,8 @@
-package main
+package dcv
 
 import (
 	"docker-containers-visualizer/cli"
 	"docker-containers-visualizer/cli/command/root"
-	"fmt"
-	"os"
 )
 
 func newDcvCommand(dcvCli *cli.DcvCli) *cli.TopLevelCommand {
@@ -12,7 +10,7 @@ func newDcvCommand(dcvCli *cli.DcvCli) *cli.TopLevelCommand {
 	return cli.NewTopLevelCommand(cmd, dcvCli, cmd.Flags())
 }
 
-func runDcv(dcvCli *cli.DcvCli) error {
+func RunDcv(dcvCli *cli.DcvCli) error {
 	tcmd := newDcvCommand(dcvCli)
 	cmd, args, err := tcmd.HandleGlobalFlags()
 	if err != nil {
@@ -25,13 +23,4 @@ func runDcv(dcvCli *cli.DcvCli) error {
 
 	cmd.SetArgs(args)
 	return cmd.Execute()
-}
-
-func main() {
-	dcvCli := cli.NewDcvCli()
-
-	if err := runDcv(dcvCli); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
 }
