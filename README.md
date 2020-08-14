@@ -14,11 +14,13 @@ Visualize all container running on the host with networks, stats and others info
 
 Using `curl`:
 ```bash
-curl -o /usr/bin/dcv https://github.com/...
+$ sudo curl -L https://github.com/iverly/docker-containers-visualizer/releases/download/v1.0/dcv -o /usr/bin/dcv
 ```
 Using releases:
 
 [Click here](https://github.com/iverly/docker-containers-visualizer/releases)
+
+**The release is only available for Debian/Ubuntu. If you want to use on others distribution. You have to clone this repo and build the project YOURSELF**
 
 ## Usage
 
