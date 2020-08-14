@@ -1,3 +1,9 @@
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/iverly/docker-containers-visualizer/build)
+[![Go Report Card](https://goreportcard.com/badge/github.com/iverly/docker-containers-visualizer)](https://goreportcard.com/report/github.com/iverly/docker-containers-visualizer)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/iverly/docker-containers-visualizer)
+![GitHub](https://img.shields.io/github/license/iverly/docker-containers-visualizer)
+
+
 # docker-containers-visualizer
 
 Visualize all container running on the host with networks, stats and others informations !
